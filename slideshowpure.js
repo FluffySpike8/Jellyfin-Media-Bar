@@ -5,10 +5,13 @@
 // Configuration
 const CONFIG = {
   IMAGE_URLS: {
-    imdbLogo: 'https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg',
-    tomatoLogo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Rotten_Tomatoes_positive_audience.svg/1920px-Rotten_Tomatoes_positive_audience.svg.png',
-    freshTomato: 'https://i.imgur.com/iMfwDk7.png',
-    rottenTomato: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Rotten_Tomatoes_rotten.svg/1024px-Rotten_Tomatoes_rotten.svg.png'
+    imdbLogo:
+      "https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg",
+    tomatoLogo:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Rotten_Tomatoes_positive_audience.svg/1920px-Rotten_Tomatoes_positive_audience.svg.png",
+    freshTomato: "https://i.imgur.com/iMfwDk7.png",
+    rottenTomato:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Rotten_Tomatoes_rotten.svg/1024px-Rotten_Tomatoes_rotten.svg.png",
   },
   shuffleInterval: 8000,
   retryInterval: 500,
@@ -17,9 +20,9 @@ const CONFIG = {
   maxPlotLength: 360,
   maxMovies: 15,
   maxTvShows: 15,
-  maxItems: 500,
+  maxItems: 5,
   preloadCount: 2,
-  fadeTransitionDuration: 500
+  fadeTransitionDuration: 500,
 };
 
 // State management
@@ -31,7 +34,7 @@ const STATE = {
     deviceName: null,
     deviceId: null,
     accessToken: null,
-    serverAddress: null
+    serverAddress: null,
   },
   slideshow: {
     hasInitialized: false,
@@ -44,8 +47,8 @@ const STATE = {
     loadedItems: {},
     createdSlides: {},
     totalItems: 0,
-    isLoading: false
-  }
+    isLoading: false,
+  },
 };
 
 // Request throttling system
@@ -65,14 +68,14 @@ const processNextRequest = () => {
   const { url, callback } = requestQueue.shift();
 
   fetch(url)
-    .then(response => {
+    .then((response) => {
       if (response.ok) {
         return response;
       }
       throw new Error(`Failed to fetch: ${response.status}`);
     })
     .then(callback)
-    .catch(error => {
+    .catch((error) => {
       console.error("Error in throttled request:", error);
     })
     .finally(() => {
@@ -126,16 +129,15 @@ const initJellyfinData = (callback) => {
   try {
     const apiClient = window.ApiClient;
     STATE.jellyfinData = {
-      userId: apiClient.getCurrentUserId ||
-        "Not Found",
+      userId: apiClient.getCurrentUserId || "Not Found",
       appName: apiClient._appName || "Not Found",
       appVersion: apiClient._appVersion || "Not Found",
       deviceName: apiClient._deviceName || "Not Found",
       deviceId: apiClient._deviceId || "Not Found",
       accessToken: apiClient._serverInfo.AccessToken || "Not Found",
-      serverAddress: apiClient._serverAddress || "Not Found"
+      serverAddress: apiClient._serverAddress || "Not Found",
     };
-    if (callback && typeof callback === 'function') {
+    if (callback && typeof callback === "function") {
       callback();
     }
   } catch (error) {
@@ -156,7 +158,7 @@ const initLoadingScreen = () => {
 
   if (!isHomePage) return;
 
-  const loadingDiv = document.createElement('div');
+  const loadingDiv = document.createElement("div");
   loadingDiv.className = "bar-loading";
   loadingDiv.id = "page-loader";
   loadingDiv.innerHTML = `
@@ -178,14 +180,14 @@ const initLoadingScreen = () => {
       document.querySelector(".slide");
 
     if (loginFormLoaded || homePageLoaded) {
-      const loader = document.querySelector('.bar-loading');
-      if (loader && typeof $ !== 'undefined') {
+      const loader = document.querySelector(".bar-loading");
+      if (loader && typeof $ !== "undefined") {
         $(loader).fadeOut(700, () => {
           loader.remove();
         });
       } else if (loader) {
         loader.style.opacity = 0;
-        loader.style.transition = 'opacity 700ms';
+        loader.style.transition = "opacity 700ms";
         setTimeout(() => loader.remove(), 700);
       }
       clearInterval(checkInterval);
@@ -269,7 +271,9 @@ const waitForApiClientAndInitialize = () => {
       window.ApiClient._serverInfo &&
       window.ApiClient._serverInfo.AccessToken
     ) {
-      console.log("🔓 User is fully logged in. Starting slideshow initialization...");
+      console.log(
+        "🔓 User is fully logged in. Starting slideshow initialization..."
+      );
       clearInterval(window.slideshowCheckInterval);
 
       if (!STATE.slideshow.hasInitialized) {
@@ -281,7 +285,9 @@ const waitForApiClientAndInitialize = () => {
         console.log("🔄 Slideshow already initialized, skipping");
       }
     } else {
-      console.log("🔒 Authentication incomplete. Waiting for complete login...");
+      console.log(
+        "🔒 Authentication incomplete. Waiting for complete login..."
+      );
     }
   }, CONFIG.retryInterval);
 };
@@ -325,7 +331,7 @@ const SlideUtils = {
    * @returns {HTMLElement} Separator element
    */
   createSeparator() {
-    const separator = document.createElement('i');
+    const separator = document.createElement("i");
     separator.className = "material-icons radio_button_off separator-icon";
     return separator;
   },
@@ -341,23 +347,23 @@ const SlideUtils = {
     const element = document.createElement(tag);
 
     Object.entries(attributes).forEach(([key, value]) => {
-      if (key === 'style' && typeof value === 'object') {
+      if (key === "style" && typeof value === "object") {
         Object.entries(value).forEach(([prop, val]) => {
           element.style[prop] = val;
         });
-      } else if (key === 'className') {
+      } else if (key === "className") {
         element.className = value;
-      } else if (key === 'innerHTML') {
+      } else if (key === "innerHTML") {
         element.innerHTML = value;
-      } else if (key === 'onclick' && typeof value === 'function') {
-        element.addEventListener('click', value);
+      } else if (key === "onclick" && typeof value === "function") {
+        element.addEventListener("click", value);
       } else {
         element.setAttribute(key, value);
       }
     });
 
     if (content) {
-      if (typeof content === 'string') {
+      if (typeof content === "string") {
         element.textContent = content;
       } else {
         element.appendChild(content);
@@ -374,7 +380,7 @@ const SlideUtils = {
   getOrCreateSlidesContainer() {
     let container = document.getElementById("slides-container");
     if (!container) {
-      container = this.createElement('div', { id: 'slides-container' });
+      container = this.createElement("div", { id: "slides-container" });
       document.body.appendChild(container);
     }
     return container;
@@ -397,18 +403,18 @@ const SlideUtils = {
    * @returns {HTMLElement} Loading indicator element
    */
   createLoadingIndicator() {
-    const loadingIndicator = this.createElement('div', {
-      className: 'slide-loading-indicator',
+    const loadingIndicator = this.createElement("div", {
+      className: "slide-loading-indicator",
       innerHTML: `
         <div class="spinner">
           <div class="bounce1"></div>
           <div class="bounce2"></div>
           <div class="bounce3"></div>
         </div>
-      `
+      `,
     });
     return loadingIndicator;
-  }
+  },
 };
 
 /**
@@ -429,7 +435,7 @@ const ApiUtils = {
       const response = await fetch(
         `${STATE.jellyfinData.serverAddress}/Items/${itemId}`,
         {
-          headers: this.getAuthHeaders()
+          headers: this.getAuthHeaders(),
         }
       );
 
@@ -465,8 +471,8 @@ const ApiUtils = {
       const text = await response.text();
       return text
         .split("\n")
-        .map(id => id.trim())
-        .filter(id => id)
+        .map((id) => id.trim())
+        .filter((id) => id)
         .slice(1);
     } catch (error) {
       console.error("Error fetching list.txt:", error);
@@ -480,12 +486,18 @@ const ApiUtils = {
    */
   async fetchItemIdsFromServer() {
     try {
-      if (!STATE.jellyfinData.accessToken || STATE.jellyfinData.accessToken === "Not Found") {
+      if (
+        !STATE.jellyfinData.accessToken ||
+        STATE.jellyfinData.accessToken === "Not Found"
+      ) {
         console.warn("Access token not available. Delaying API request...");
         return [];
       }
 
-      if (!STATE.jellyfinData.serverAddress || STATE.jellyfinData.serverAddress === "Not Found") {
+      if (
+        !STATE.jellyfinData.serverAddress ||
+        STATE.jellyfinData.serverAddress === "Not Found"
+      ) {
         console.warn("Server address not available. Delaying API request...");
         return [];
       }
@@ -495,27 +507,30 @@ const ApiUtils = {
       const response = await fetch(
         `${STATE.jellyfinData.serverAddress}/Items?IncludeItemTypes=Movie,Series&Recursive=true&hasOverview=true&imageTypes=Logo,Backdrop&sortBy=Random&isPlayed=False&Limit=${CONFIG.maxItems}&Fields=Id`,
         {
-          headers: this.getAuthHeaders()
+          headers: this.getAuthHeaders(),
         }
       );
 
       if (!response.ok) {
-        console.error(`Failed to fetch items: ${response.status} ${response.statusText}`);
+        console.error(
+          `Failed to fetch items: ${response.status} ${response.statusText}`
+        );
         return [];
       }
 
       const data = await response.json();
       const items = data.Items || [];
 
-      console.log(`Successfully fetched ${items.length} random items from server`);
+      console.log(
+        `Successfully fetched ${items.length} random items from server`
+      );
 
-      return items.map(item => item.Id);
+      return items.map((item) => item.Id);
     } catch (error) {
       console.error("Error fetching item IDs:", error);
       return [];
     }
   },
-
 
   /**
    * Get authentication headers for API requests
@@ -523,7 +538,7 @@ const ApiUtils = {
    */
   getAuthHeaders() {
     return {
-      'Authorization': `MediaBrowser Client="${STATE.jellyfinData.appName}", Device="${STATE.jellyfinData.deviceName}", DeviceId="${STATE.jellyfinData.deviceId}", Version="${STATE.jellyfinData.appVersion}", Token="${STATE.jellyfinData.accessToken}"`
+      Authorization: `MediaBrowser Client="${STATE.jellyfinData.appName}", Device="${STATE.jellyfinData.deviceName}", DeviceId="${STATE.jellyfinData.deviceId}", Version="${STATE.jellyfinData.appVersion}", Token="${STATE.jellyfinData.accessToken}"`,
     };
   },
 
@@ -542,12 +557,14 @@ const ApiUtils = {
 
       const playUrl = `${STATE.jellyfinData.serverAddress}/Sessions/${sessionId}/Playing?playCommand=PlayNow&itemIds=${itemId}`;
       const playResponse = await fetch(playUrl, {
-        method: 'POST',
-        headers: this.getAuthHeaders()
+        method: "POST",
+        headers: this.getAuthHeaders(),
       });
 
       if (!playResponse.ok) {
-        throw new Error(`Failed to send play command: ${playResponse.statusText}`);
+        throw new Error(
+          `Failed to send play command: ${playResponse.statusText}`
+        );
       }
 
       console.log("Play command sent successfully to session:", sessionId);
@@ -565,9 +582,11 @@ const ApiUtils = {
   async getSessionId() {
     try {
       const response = await fetch(
-        `${STATE.jellyfinData.serverAddress}/Sessions?deviceId=${encodeURIComponent(STATE.jellyfinData.deviceId)}`,
+        `${
+          STATE.jellyfinData.serverAddress
+        }/Sessions?deviceId=${encodeURIComponent(STATE.jellyfinData.deviceId)}`,
         {
-          headers: this.getAuthHeaders()
+          headers: this.getAuthHeaders(),
         }
       );
 
@@ -578,7 +597,10 @@ const ApiUtils = {
       const sessions = await response.json();
 
       if (!sessions || sessions.length === 0) {
-        console.warn("No sessions found for deviceId:", STATE.jellyfinData.deviceId);
+        console.warn(
+          "No sessions found for deviceId:",
+          STATE.jellyfinData.deviceId
+        );
         return null;
       }
 
@@ -587,7 +609,7 @@ const ApiUtils = {
       console.error("Error fetching session data:", error);
       return null;
     }
-  }
+  },
 };
 
 /**
@@ -619,9 +641,9 @@ class SlideTimer {
   }
 
   /**
-     * Starts the timer
-     * @returns {SlideTimer} This instance for chaining
-     */
+   * Starts the timer
+   * @returns {SlideTimer} This instance for chaining
+   */
   start() {
     if (!this.timerId) {
       this.timerId = setInterval(this.callback, this.interval);
@@ -639,10 +661,9 @@ class SlideTimer {
 }
 
 /**
-* Observer for handling slideshow visibility based on current page
-*/
+ * Observer for handling slideshow visibility based on current page
+ */
 const VisibilityObserver = {
-
   updateVisibility() {
     const activeTab = document.querySelector(".emby-tab-button-active");
     const container = document.getElementById("slides-container");
@@ -677,12 +698,12 @@ const VisibilityObserver = {
     window.addEventListener("hashchange", this.updateVisibility);
 
     this.updateVisibility();
-  }
+  },
 };
 
 /**
-* Slideshow UI creation and management
-*/
+ * Slideshow UI creation and management
+ */
 const SlideCreator = {
   /**
    * Creates a slide element for an item
@@ -699,88 +720,94 @@ const SlideCreator = {
     const itemId = item.Id;
     const serverAddress = STATE.jellyfinData.serverAddress;
 
-    const slide = SlideUtils.createElement('a', {
-      className: 'slide',
-      target: '_top',
-      rel: 'noreferrer',
+    const slide = SlideUtils.createElement("a", {
+      className: "slide",
+      target: "_top",
+      rel: "noreferrer",
       tabIndex: 0,
       style: {
-        display: 'none',
-        opacity: '0',
-        transition: `opacity ${CONFIG.fadeTransitionDuration}ms ease-in-out`
+        display: "none",
+        opacity: "0",
+        transition: `opacity ${CONFIG.fadeTransitionDuration}ms ease-in-out`,
       },
-      'data-item-id': itemId
+      "data-item-id": itemId,
     });
 
-    const backdrop = SlideUtils.createElement('img', {
-      className: 'backdrop low-quality',
+    const backdrop = SlideUtils.createElement("img", {
+      className: "backdrop low-quality",
       src: `${serverAddress}/Items/${itemId}/Images/Backdrop/0?quality=60&fillWidth=480`,
-      alt: 'Backdrop',
-      loading: 'eager',
-      'data-high-quality': `${serverAddress}/Items/${itemId}/Images/Backdrop/0?quality=90`
+      alt: "Backdrop",
+      loading: "eager",
+      "data-high-quality": `${serverAddress}/Items/${itemId}/Images/Backdrop/0?quality=90`,
     });
 
-    backdrop.onload = function () {
-    };
+    backdrop.onload = function () {};
 
-    const backdropOverlay = SlideUtils.createElement('div', {
-      className: 'backdrop-overlay'
+    const backdropOverlay = SlideUtils.createElement("div", {
+      className: "backdrop-overlay",
     });
 
-    const backdropContainer = SlideUtils.createElement('div', {
-      className: 'backdrop-container'
+    const backdropContainer = SlideUtils.createElement("div", {
+      className: "backdrop-container",
     });
     backdropContainer.append(backdrop, backdropOverlay);
 
-    const logo = SlideUtils.createElement('img', {
-      className: 'logo low-quality',
+    const logo = SlideUtils.createElement("img", {
+      className: "logo low-quality",
       src: `${serverAddress}/Items/${itemId}/Images/Logo?quality=30`,
-      alt: 'Logo',
-      loading: 'eager',
-      'data-high-quality': `${serverAddress}/Items/${itemId}/Images/Logo?quality=90`
+      alt: "Logo",
+      loading: "eager",
+      "data-high-quality": `${serverAddress}/Items/${itemId}/Images/Logo?quality=90`,
     });
 
-    logo.onload = function () {
-    };
+    logo.onload = function () {};
 
-    const logoContainer = SlideUtils.createElement('div', {
-      className: 'logo-container'
+    const logoContainer = SlideUtils.createElement("div", {
+      className: "logo-container",
     });
     logoContainer.appendChild(logo);
 
-    const featuredContent = SlideUtils.createElement('div', {
-      className: 'featured-content'
-    }, title);
+    const featuredContent = SlideUtils.createElement(
+      "div",
+      {
+        className: "featured-content",
+      },
+      title
+    );
 
     const plot = item.Overview || "No overview available";
-    const plotElement = SlideUtils.createElement('div', {
-      className: 'plot'
-    }, plot);
+    const plotElement = SlideUtils.createElement(
+      "div",
+      {
+        className: "plot",
+      },
+      plot
+    );
     SlideUtils.truncateText(plotElement, CONFIG.maxPlotLength);
 
-    const plotContainer = SlideUtils.createElement('div', {
-      className: 'plot-container'
+    const plotContainer = SlideUtils.createElement("div", {
+      className: "plot-container",
     });
     plotContainer.appendChild(plotElement);
 
-    const gradientOverlay = SlideUtils.createElement('div', {
-      className: 'gradient-overlay'
+    const gradientOverlay = SlideUtils.createElement("div", {
+      className: "gradient-overlay",
     });
 
-    const infoContainer = SlideUtils.createElement('div', {
-      className: 'info-container'
+    const infoContainer = SlideUtils.createElement("div", {
+      className: "info-container",
     });
 
     const ratingInfo = this.createRatingInfo(item);
     infoContainer.appendChild(ratingInfo);
 
-    const genreElement = SlideUtils.createElement('div', {
-      className: 'genre'
+    const genreElement = SlideUtils.createElement("div", {
+      className: "genre",
     });
     genreElement.innerHTML = SlideUtils.parseGenres(item.Genres);
 
-    const buttonContainer = SlideUtils.createElement('div', {
-      className: 'button-container'
+    const buttonContainer = SlideUtils.createElement("div", {
+      className: "button-container",
     });
 
     const playButton = this.createPlayButton(itemId);
@@ -814,25 +841,25 @@ const SlideCreator = {
       OfficialRating: age,
       PremiereDate: date,
       RunTimeTicks: runtime,
-      ChildCount: season
+      ChildCount: season,
     } = item;
 
-    const ratingTest = SlideUtils.createElement('div', {
-      className: 'rating-value'
+    const ratingTest = SlideUtils.createElement("div", {
+      className: "rating-value",
     });
 
-    const imdbLogo = SlideUtils.createElement('img', {
-      className: 'imdb-logo',
+    const imdbLogo = SlideUtils.createElement("img", {
+      className: "imdb-logo",
       src: CONFIG.IMAGE_URLS.imdbLogo,
-      alt: 'IMDb Logo',
+      alt: "IMDb Logo",
       style: {
-        width: '30px',
-        height: '30px'
-      }
+        width: "30px",
+        height: "30px",
+      },
     });
     ratingTest.appendChild(imdbLogo);
 
-    if (typeof rating === 'number') {
+    if (typeof rating === "number") {
       ratingTest.innerHTML += rating.toFixed(1);
     } else {
       ratingTest.innerHTML += '<span style="color: #fff9;">N/A</span>';
@@ -840,75 +867,86 @@ const SlideCreator = {
 
     ratingTest.appendChild(SlideUtils.createSeparator());
 
-    const tomatoRatingDiv = SlideUtils.createElement('div', {
-      className: 'tomato-rating'
+    const tomatoRatingDiv = SlideUtils.createElement("div", {
+      className: "tomato-rating",
     });
 
-    const tomatoLogo = SlideUtils.createElement('img', {
-      className: 'tomato-logo',
+    const tomatoLogo = SlideUtils.createElement("img", {
+      className: "tomato-logo",
       src: CONFIG.IMAGE_URLS.tomatoLogo,
-      alt: 'Tomato Logo',
+      alt: "Tomato Logo",
       style: {
-        width: '15px',
-        height: '17px'
-      }
+        width: "15px",
+        height: "17px",
+      },
     });
 
     let valueElement;
-    if (typeof criticRating === 'number') {
+    if (typeof criticRating === "number") {
       valueElement = document.createTextNode(`${criticRating}% `);
     } else {
-      const naSpan = SlideUtils.createElement('span', {
-        style: { color: '#fff9' }
-      }, 'N/A ');
+      const naSpan = SlideUtils.createElement(
+        "span",
+        {
+          style: { color: "#fff9" },
+        },
+        "N/A "
+      );
       valueElement = naSpan;
     }
 
-    const criticLogo = SlideUtils.createElement('img', {
-      className: 'critic-logo',
-      src: criticRating > 59 ? CONFIG.IMAGE_URLS.freshTomato : CONFIG.IMAGE_URLS.rottenTomato,
-      alt: criticRating > 59 ? 'Fresh Tomato' : 'Rotten Tomato',
+    const criticLogo = SlideUtils.createElement("img", {
+      className: "critic-logo",
+      src:
+        criticRating > 59
+          ? CONFIG.IMAGE_URLS.freshTomato
+          : CONFIG.IMAGE_URLS.rottenTomato,
+      alt: criticRating > 59 ? "Fresh Tomato" : "Rotten Tomato",
       style: {
-        width: '15px',
-        height: '15px'
-      }
+        width: "15px",
+        height: "15px",
+      },
     });
 
     tomatoRatingDiv.append(tomatoLogo, valueElement, criticLogo);
     tomatoRatingDiv.appendChild(SlideUtils.createSeparator());
 
-    const ageRatingDiv = SlideUtils.createElement('div', {
-      className: 'age-rating'
+    const ageRatingDiv = SlideUtils.createElement("div", {
+      className: "age-rating",
     });
-    ageRatingDiv.innerHTML = age || 'N/A';
+    ageRatingDiv.innerHTML = age || "N/A";
 
-    const premiereDate = SlideUtils.createElement('div', {
-      className: 'date'
+    const premiereDate = SlideUtils.createElement("div", {
+      className: "date",
     });
 
     const year = date ? new Date(date).getFullYear() : NaN;
     if (isNaN(year)) {
-      const naSpan = SlideUtils.createElement('span', {
-        style: { color: '#fff9' }
-      }, 'N/A');
+      const naSpan = SlideUtils.createElement(
+        "span",
+        {
+          style: { color: "#fff9" },
+        },
+        "N/A"
+      );
       premiereDate.appendChild(naSpan);
     } else {
       premiereDate.textContent = year;
     }
 
-    const runTimeElement = SlideUtils.createElement('div', {
-      className: 'runTime'
+    const runTimeElement = SlideUtils.createElement("div", {
+      className: "runTime",
     });
 
     if (season === undefined) {
       const milliseconds = runtime / 10000;
       const currentTime = new Date();
       const endTime = new Date(currentTime.getTime() + milliseconds);
-      const options = { hour: '2-digit', minute: '2-digit', hour12: true };
+      const options = { hour: "2-digit", minute: "2-digit", hour12: true };
       const formattedEndTime = endTime.toLocaleTimeString([], options);
       runTimeElement.textContent = `Ends at ${formattedEndTime}`;
     } else {
-      runTimeElement.textContent = `${season} Season${season > 1 ? 's' : ''}`;
+      runTimeElement.textContent = `${season} Season${season > 1 ? "s" : ""}`;
     }
 
     ratingTest.append(
@@ -929,8 +967,8 @@ const SlideCreator = {
    * @returns {HTMLElement} Play button element
    */
   createPlayButton(itemId) {
-    return SlideUtils.createElement('button', {
-      className: 'play-button',
+    return SlideUtils.createElement("button", {
+      className: "play-button",
       innerHTML: `
       <span class="play-icon"><i class="material-icons">play_circle</i></span>
       <span class="play-text">Play</span>
@@ -939,7 +977,7 @@ const SlideCreator = {
         e.preventDefault();
         e.stopPropagation();
         ApiUtils.playItem(itemId);
-      }
+      },
     });
   },
 
@@ -949,8 +987,8 @@ const SlideCreator = {
    * @returns {HTMLElement} Detail button element
    */
   createDetailButton(itemId) {
-    return SlideUtils.createElement('button', {
-      className: 'detail-button',
+    return SlideUtils.createElement("button", {
+      className: "detail-button",
       innerHTML: `
       <span class="detail-icon"><i class="material-icons info_outline"></i></span>
       <span class="detail-text">Info</span>
@@ -963,7 +1001,7 @@ const SlideCreator = {
         } else {
           window.location.href = `#/details?id=${itemId}`;
         }
-      }
+      },
     });
   },
 
@@ -973,14 +1011,14 @@ const SlideCreator = {
    * @returns {HTMLElement} Placeholder slide element
    */
   createLoadingPlaceholder(itemId) {
-    const placeholder = SlideUtils.createElement('a', {
-      className: 'slide placeholder',
-      'data-item-id': itemId,
+    const placeholder = SlideUtils.createElement("a", {
+      className: "slide placeholder",
+      "data-item-id": itemId,
       style: {
-        display: 'none',
-        opacity: '0',
-        transition: `opacity ${CONFIG.fadeTransitionDuration}ms ease-in-out`
-      }
+        display: "none",
+        opacity: "0",
+        transition: `opacity ${CONFIG.fadeTransitionDuration}ms ease-in-out`,
+      },
     });
 
     const loadingIndicator = SlideUtils.createLoadingIndicator();
@@ -1011,7 +1049,10 @@ const SlideCreator = {
         return null;
       }
 
-      const slideElement = this.createSlideElement(item, item.Type === "Movie" ? "Movie" : "TV Show");
+      const slideElement = this.createSlideElement(
+        item,
+        item.Type === "Movie" ? "Movie" : "TV Show"
+      );
       if (!slideElement) {
         placeholder.remove();
         return null;
@@ -1026,41 +1067,40 @@ const SlideCreator = {
       console.error("Error creating slide for item:", error, itemId);
       return null;
     }
-  }
+  },
 };
 
 /**
-* Manages slideshow functionality
-*/
+ * Manages slideshow functionality
+ */
 const SlideshowManager = {
-
   /**
    * Creates pagination dots for the slideshow
    * Exactly 5 dots that cycle regardless of total slides
    */
   createPaginationDots() {
     const container = SlideUtils.getOrCreateSlidesContainer();
-    let dotsContainer = container.querySelector('.dots-container');
+    let dotsContainer = container.querySelector(".dots-container");
     const parentContainer = container.parentElement || document.body;
 
     if (dotsContainer) {
       dotsContainer.remove();
     }
 
-    dotsContainer = SlideUtils.createElement('div', {
-      className: 'dots-container',
+    dotsContainer = SlideUtils.createElement("div", {
+      className: "dots-container",
       style: {
-        opacity: '0',
-        transition: `opacity ${CONFIG.fadeTransitionDuration}ms ease-in-out`
-      }
+        opacity: "0",
+        transition: `opacity ${CONFIG.fadeTransitionDuration}ms ease-in-out`,
+      },
     });
 
     const numDots = 5;
 
     for (let i = 0; i < numDots; i++) {
-      const dot = SlideUtils.createElement('span', {
-        className: 'dot',
-        'data-index': i,
+      const dot = SlideUtils.createElement("span", {
+        className: "dot",
+        "data-index": i,
         onclick: (e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -1075,7 +1115,7 @@ const SlideshowManager = {
           }
 
           this.updateCurrentSlide(targetIndex);
-        }
+        },
       });
       dotsContainer.appendChild(dot);
     }
@@ -1089,7 +1129,7 @@ const SlideshowManager = {
    */
   updateDots() {
     const container = SlideUtils.getOrCreateSlidesContainer();
-    const dots = container.querySelectorAll('.dot');
+    const dots = container.querySelectorAll(".dot");
     const currentIndex = STATE.slideshow.currentSlideIndex;
     const totalItems = STATE.slideshow.totalItems;
     const numDots = dots.length;
@@ -1099,14 +1139,16 @@ const SlideshowManager = {
     if (totalItems <= numDots) {
       activeDotIndex = currentIndex;
     } else {
-      activeDotIndex = Math.floor((currentIndex % numDots) * (numDots / numDots));
+      activeDotIndex = Math.floor(
+        (currentIndex % numDots) * (numDots / numDots)
+      );
     }
 
     dots.forEach((dot, index) => {
       if (index === activeDotIndex) {
-        dot.classList.add('active');
+        dot.classList.add("active");
       } else {
-        dot.classList.remove('active');
+        dot.classList.remove("active");
       }
     });
   },
@@ -1130,14 +1172,17 @@ const SlideshowManager = {
 
       const currentItemId = STATE.slideshow.itemIds[index];
 
-      let currentSlide = document.querySelector(`.slide[data-item-id="${currentItemId}"]`);
+      let currentSlide = document.querySelector(
+        `.slide[data-item-id="${currentItemId}"]`
+      );
       if (!currentSlide) {
-        const placeholder = SlideCreator.createLoadingPlaceholder(currentItemId);
+        const placeholder =
+          SlideCreator.createLoadingPlaceholder(currentItemId);
         container.appendChild(placeholder);
 
-        placeholder.style.display = 'block';
+        placeholder.style.display = "block";
         void placeholder.offsetWidth;
-        placeholder.style.opacity = '1';
+        placeholder.style.opacity = "1";
 
         currentSlide = await SlideCreator.createSlideForItemId(currentItemId);
 
@@ -1152,40 +1197,42 @@ const SlideshowManager = {
         }
       }
 
-      const previousVisibleSlide = container.querySelector('.slide[style*="opacity: 1"]');
+      const previousVisibleSlide = container.querySelector(
+        '.slide[style*="opacity: 1"]'
+      );
 
-      currentSlide.style.display = 'block';
-      currentSlide.style.opacity = '0';
-      currentSlide.style.zIndex = '2';
+      currentSlide.style.display = "block";
+      currentSlide.style.opacity = "0";
+      currentSlide.style.zIndex = "2";
 
       if (previousVisibleSlide) {
-        previousVisibleSlide.style.zIndex = '1';
+        previousVisibleSlide.style.zIndex = "1";
       }
 
       STATE.slideshow.currentSlideIndex = index;
 
       void currentSlide.offsetWidth;
 
-      currentSlide.style.opacity = '1';
+      currentSlide.style.opacity = "1";
 
       if (index === 0 || !previousVisibleSlide) {
-        const dotsContainer = container.querySelector('.dots-container');
+        const dotsContainer = container.querySelector(".dots-container");
         if (dotsContainer) {
-          dotsContainer.style.opacity = '1';
+          dotsContainer.style.opacity = "1";
         }
       }
 
       setTimeout(() => {
-        const allSlides = container.querySelectorAll('.slide');
-        allSlides.forEach(slide => {
+        const allSlides = container.querySelectorAll(".slide");
+        allSlides.forEach((slide) => {
           if (slide !== currentSlide) {
-            slide.style.display = 'none';
-            slide.style.opacity = '0';
-            slide.style.zIndex = '0';
+            slide.style.display = "none";
+            slide.style.opacity = "0";
+            slide.style.zIndex = "0";
           }
         });
 
-        currentSlide.style.zIndex = '1';
+        currentSlide.style.zIndex = "1";
       }, CONFIG.fadeTransitionDuration);
 
       this.preloadAdjacentSlides(index);
@@ -1213,14 +1260,14 @@ const SlideshowManager = {
   upgradeSlideImageQuality(slide) {
     if (!slide) return;
 
-    const images = slide.querySelectorAll('img.low-quality');
-    images.forEach(img => {
-      const highQualityUrl = img.getAttribute('data-high-quality');
+    const images = slide.querySelectorAll("img.low-quality");
+    images.forEach((img) => {
+      const highQualityUrl = img.getAttribute("data-high-quality");
       if (highQualityUrl) {
         addThrottledRequest(highQualityUrl, () => {
           img.src = highQualityUrl;
-          img.classList.remove('low-quality');
-          img.classList.add('high-quality');
+          img.classList.remove("low-quality");
+          img.classList.add("high-quality");
         });
       }
     });
@@ -1266,14 +1313,14 @@ const SlideshowManager = {
   },
 
   /**
- * Prunes the slide cache to prevent memory bloat
- * Removes slides that are outside the viewing range
- */
+   * Prunes the slide cache to prevent memory bloat
+   * Removes slides that are outside the viewing range
+   */
   pruneSlideCache() {
     const currentIndex = STATE.slideshow.currentSlideIndex;
     const keepRange = 3;
 
-    Object.keys(STATE.slideshow.createdSlides).forEach(itemId => {
+    Object.keys(STATE.slideshow.createdSlides).forEach((itemId) => {
       const index = STATE.slideshow.itemIds.indexOf(itemId);
       if (index === -1) return;
 
@@ -1281,7 +1328,9 @@ const SlideshowManager = {
       if (distance > keepRange) {
         delete STATE.slideshow.loadedItems[itemId];
 
-        const slide = document.querySelector(`.slide[data-item-id="${itemId}"]`);
+        const slide = document.querySelector(
+          `.slide[data-item-id="${itemId}"]`
+        );
         if (slide) slide.remove();
 
         delete STATE.slideshow.createdSlides[itemId];
@@ -1299,14 +1348,22 @@ const SlideshowManager = {
     let touchStartX = 0;
     let touchEndX = 0;
 
-    container.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
+    container.addEventListener(
+      "touchstart",
+      (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      },
+      { passive: true }
+    );
 
-    container.addEventListener('touchend', (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      this.handleSwipe(touchStartX, touchEndX);
-    }, { passive: true });
+    container.addEventListener(
+      "touchend",
+      (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        this.handleSwipe(touchStartX, touchEndX);
+      },
+      { passive: true }
+    );
   },
 
   /**
@@ -1332,17 +1389,17 @@ const SlideshowManager = {
    * Initializes keyboard event listeners
    */
   initKeyboardEvents() {
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener("keydown", (e) => {
       if (!STATE.slideshow.containerFocused) {
         return;
       }
 
       switch (e.key) {
-        case 'ArrowLeft':
+        case "ArrowLeft":
           this.prevSlide();
           e.preventDefault();
           break;
-        case 'ArrowRight':
+        case "ArrowRight":
           this.nextSlide();
           e.preventDefault();
           break;
@@ -1351,19 +1408,18 @@ const SlideshowManager = {
 
     const container = SlideUtils.getOrCreateSlidesContainer();
 
-    container.addEventListener('focus', () => {
+    container.addEventListener("focus", () => {
       STATE.slideshow.containerFocused = true;
     });
 
-    container.addEventListener('blur', () => {
+    container.addEventListener("blur", () => {
       STATE.slideshow.containerFocused = false;
     });
   },
 
-
   /**
-  * Loads slideshow data and initializes the slideshow
-  */
+   * Loads slideshow data and initializes the slideshow
+   */
   async loadSlideshowData() {
     try {
       STATE.slideshow.isLoading = true;
@@ -1391,7 +1447,7 @@ const SlideshowManager = {
     } finally {
       STATE.slideshow.isLoading = false;
     }
-  }
+  },
 };
 
 /**
@@ -1400,8 +1456,8 @@ const SlideshowManager = {
 const initArrowNavigation = () => {
   const container = SlideUtils.getOrCreateSlidesContainer();
 
-  const leftArrow = SlideUtils.createElement('div', {
-    className: 'arrow left-arrow',
+  const leftArrow = SlideUtils.createElement("div", {
+    className: "arrow left-arrow",
     innerHTML: '<i class="material-icons">chevron_left</i>',
     onclick: (e) => {
       e.preventDefault();
@@ -1409,14 +1465,14 @@ const initArrowNavigation = () => {
       SlideshowManager.prevSlide();
     },
     style: {
-      opacity: '0',
-      transition: 'opacity 0.3s ease',
-      display: 'none'
-    }
+      opacity: "0",
+      transition: "opacity 0.3s ease",
+      display: "none",
+    },
   });
 
-  const rightArrow = SlideUtils.createElement('div', {
-    className: 'arrow right-arrow',
+  const rightArrow = SlideUtils.createElement("div", {
+    className: "arrow right-arrow",
     innerHTML: '<i class="material-icons">chevron_right</i>',
     onclick: (e) => {
       e.preventDefault();
@@ -1424,52 +1480,56 @@ const initArrowNavigation = () => {
       SlideshowManager.nextSlide();
     },
     style: {
-      opacity: '0',
-      transition: 'opacity 0.3s ease',
-      display: 'none'
-    }
+      opacity: "0",
+      transition: "opacity 0.3s ease",
+      display: "none",
+    },
   });
 
   container.appendChild(leftArrow);
   container.appendChild(rightArrow);
 
   const showArrows = () => {
-    leftArrow.style.display = 'block';
-    rightArrow.style.display = 'block';
+    leftArrow.style.display = "block";
+    rightArrow.style.display = "block";
 
     void leftArrow.offsetWidth;
     void rightArrow.offsetWidth;
 
-    leftArrow.style.opacity = '1';
-    rightArrow.style.opacity = '1';
+    leftArrow.style.opacity = "1";
+    rightArrow.style.opacity = "1";
   };
 
   const hideArrows = () => {
-    leftArrow.style.opacity = '0';
-    rightArrow.style.opacity = '0';
+    leftArrow.style.opacity = "0";
+    rightArrow.style.opacity = "0";
 
     setTimeout(() => {
-      if (leftArrow.style.opacity === '0') {
-        leftArrow.style.display = 'none';
-        rightArrow.style.display = 'none';
+      if (leftArrow.style.opacity === "0") {
+        leftArrow.style.display = "none";
+        rightArrow.style.display = "none";
       }
     }, 300);
   };
 
-  container.addEventListener('mouseenter', showArrows);
+  container.addEventListener("mouseenter", showArrows);
 
-  container.addEventListener('mouseleave', hideArrows);
+  container.addEventListener("mouseleave", hideArrows);
 
   let arrowTimeout;
-  container.addEventListener('touchstart', () => {
-    if (arrowTimeout) {
-      clearTimeout(arrowTimeout);
-    }
+  container.addEventListener(
+    "touchstart",
+    () => {
+      if (arrowTimeout) {
+        clearTimeout(arrowTimeout);
+      }
 
-    showArrows();
+      showArrows();
 
-    arrowTimeout = setTimeout(hideArrows, 2000);
-  }, { passive: true });
+      arrowTimeout = setTimeout(hideArrows, 2000);
+    },
+    { passive: true }
+  );
 };
 
 /**
@@ -1483,57 +1543,61 @@ const slidesInit = async () => {
   STATE.slideshow.hasInitialized = true;
 
   /**
- * Initialize IntersectionObserver for lazy loading images
- */
+   * Initialize IntersectionObserver for lazy loading images
+   */
   const initLazyLoading = () => {
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const image = entry.target;
-          const highQualityUrl = image.getAttribute('data-high-quality');
+    const imageObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const image = entry.target;
+            const highQualityUrl = image.getAttribute("data-high-quality");
 
-          if (highQualityUrl &&
-            image.closest('.slide').style.opacity === '1') {
+            if (
+              highQualityUrl &&
+              image.closest(".slide").style.opacity === "1"
+            ) {
+              requestQueue.push({
+                url: highQualityUrl,
+                callback: () => {
+                  image.src = highQualityUrl;
+                  image.classList.remove("low-quality");
+                  image.classList.add("high-quality");
+                },
+              });
 
-            requestQueue.push({
-              url: highQualityUrl,
-              callback: () => {
-                image.src = highQualityUrl;
-                image.classList.remove('low-quality');
-                image.classList.add('high-quality');
+              if (requestQueue.length === 1) {
+                processNextRequest();
               }
-            });
-
-            if (requestQueue.length === 1) {
-              processNextRequest();
             }
-          }
 
-          observer.unobserve(image);
-        }
-      });
-    }, {
-      rootMargin: '50px',
-      threshold: 0.1
-    });
+            observer.unobserve(image);
+          }
+        });
+      },
+      {
+        rootMargin: "50px",
+        threshold: 0.1,
+      }
+    );
 
     const observeSlideImages = () => {
-      const slides = document.querySelectorAll('.slide');
-      slides.forEach(slide => {
-        const images = slide.querySelectorAll('img.low-quality');
-        images.forEach(image => {
+      const slides = document.querySelectorAll(".slide");
+      slides.forEach((slide) => {
+        const images = slide.querySelectorAll("img.low-quality");
+        images.forEach((image) => {
           imageObserver.observe(image);
         });
       });
     };
 
-    const slideObserver = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
+    const slideObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
         if (mutation.addedNodes) {
-          mutation.addedNodes.forEach(node => {
-            if (node.classList && node.classList.contains('slide')) {
-              const images = node.querySelectorAll('img.low-quality');
-              images.forEach(image => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.classList && node.classList.contains("slide")) {
+              const images = node.querySelectorAll("img.low-quality");
+              images.forEach((image) => {
                 imageObserver.observe(image);
               });
             }
@@ -1588,7 +1652,7 @@ window.slideshowPure = {
   },
   prevSlide: () => {
     SlideshowManager.prevSlide();
-  }
+  },
 };
 
 initLoadingScreen();
